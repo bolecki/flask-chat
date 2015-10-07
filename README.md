@@ -21,3 +21,8 @@ docker run --name chatdb -d chat/redis
 # Start flask app (make sure to substitute full path below)
 docker run -d --link chatdb:db -v <full path to chat folder>:/tmp/workdir -p 8012:8012 chat/flask
 ```
+
+# TODO
+1. HTTPS
+2. Move more formatting to stylesheets
+3. Redesign UI

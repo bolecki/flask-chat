@@ -20,10 +20,24 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Placeholder id
 chat_id = "02e8ifno32"
 
-def handle_message(message, mine):
-    if mine:
-        red.rpush(chat_id + ":chat", message['data'])
-    return 'data: %s\n\n' % message['data']
+def handle_message(message, user):
+    text = str(message['data'])
+    if text[0:5] == "/quit":
+        if text[6:] == user:
+            return "quit"
+    else:
+        msg_user_m = re.search('^<b>(.*)</b>: ', text)
+        mine = False
+        if '</br><center' in text:
+            if 'class="{user}"'.format(user=user) in text:
+                mine = True
+        if msg_user_m:
+            msg_user = msg_user_m.group(1)
+            mine = True if msg_user == user else False
+        if message['type'] != 'subscribe':
+            if mine:
+                red.rpush(chat_id + ":chat", message['data'])
+            return 'data: %s\n\n' % message['data']
 
 
 def event_stream(user):
@@ -31,21 +45,12 @@ def event_stream(user):
     pubsub = red.pubsub()
     pubsub.subscribe('chat')
     for message in pubsub.listen():
-        text = str(message['data'])
-        if text[0:5] == "/quit":
-            if text[6:] == user:
+        parsed = handle_message(message, user)
+        if parsed:
+            if parsed == "quit":
                 break
-        else:
-            msg_user_m = re.search('^<b>(.*)</b>: ', text)
-            mine = False
-            if '</br><center' in text:
-                if 'class="{user}"'.format(user=user) in text:
-                    mine = True
-            if msg_user_m:
-                msg_user = msg_user_m.group(1)
-                mine = True if msg_user == user else False
-            if message['type'] != 'subscribe':
-                yield handle_message(message, mine)
+            else:
+                yield parsed
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -114,6 +119,10 @@ def quit():
         which will parse the message and close the stream.
         It passes the username to ensure that the correct
         stream is closed.
+
+        This is triggered with the Javascript
+        window.onbeforeunload function in the
+        template/index.html file.
     '''
     user = flask.session.get('user', 'anonymous')
     red.publish('chat', u'/quit %s' % (user))

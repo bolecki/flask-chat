@@ -98,6 +98,7 @@ def images():
             if os.stat(rel_path).st_size < 1:
                 os.remove(rel_path)
     files = sorted(os.listdir(app.config['UPLOAD_FOLDER']))[::-1]
+    files.remove('.gitignore')
     return flask.render_template('images.html', files=files)
 
 

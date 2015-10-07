@@ -21,6 +21,31 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 chat_id = "02e8ifno32"
 
 def handle_message(message, user):
+    '''
+        Parse the message and determine how to proceed.
+
+        This will either return a value to close the
+        stream, or return a message to broadcast to all
+        connections.
+
+        Cases:
+        '/quit' - return a value to quit the stream
+        '</br><center' - this is a header message
+            check to see if it is associated with the
+            current user
+        '^<b>.*</b>: ' - this is a regular message
+            check to see if it is associated with the
+            current user
+
+        If the message is associated with the current
+        user, append it to the redis DB chat list.
+
+        Each stream will process these messages.
+        In order to verify that we do not create
+        duplicates in the database, we must ensure that
+        it is only added once.  This is done by checking
+        the associated user.
+    '''
     text = str(message['data'])
     if text[0:5] == "/quit":
         if text[6:] == user:
@@ -41,6 +66,23 @@ def handle_message(message, user):
 
 
 def event_stream(user):
+    '''
+        Create an event stream for each user.
+
+        Create a redis publish/subscribe object
+        and subscribe to the 'chat' channel.  Listen
+        to the connection, pass message parsing off
+        to the handle_message method, and yield data
+        whenever applicable.  Yielded data will be sent
+        to the chat channel.
+
+        The first thing this method does is publish
+        a quit message for the current user.  Since
+        this is a new stream, it will enforce that only
+        one stream is ever associated with a user.
+        Any other connection with this username will be
+        disconnected.
+    '''
     red.publish('chat', u'/quit %s' % (user))
     pubsub = red.pubsub()
     pubsub.subscribe('chat')

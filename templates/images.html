@@ -1,0 +1,20 @@
+<!doctype html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chat Images</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+</head>
+<body>
+    With great power comes great responsibility.  Please don't make me regret this!
+    <form action="" method="post" enctype="multipart/form-data">
+        <input type="file" name="file"></br>
+        <input type="submit" value="Upload">
+    </form>
+    {% if files[0] %}
+        <img style="max-width:100%;max-height:100%;" src="static/images/{{files[0]}}" alt="{{files[0]}}">
+    {% endif %}
+    {% for file in files[1:] %}
+        </br><a href="static/images/{{file}}">{{file}}</a>
+    {% endfor %}
+</body>

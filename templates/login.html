@@ -1,0 +1,44 @@
+<!doctype html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chat</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+</head>
+<body>
+    <center>
+        <form style="padding-top:20%;color:red;" action="" method="post">
+            <b>Login</b></br><input name="user" placeholder="Username..." value="{{username}}">
+            </br><input type="password" name="pwd" placeholder="Password...">
+            </br><input id="submit" type="submit">
+        </form>
+        {% if error %}
+            <b>The password you entered is not valid for that username!</b>
+        {% endif %}
+        <div style="width:80%;padding-top:5%;text-align:left;">
+            <h2 style="text-align:left;">Welcome</h2>
+            Welcome to the land of testing! There are a lot of bugs still, so let me know if you find anything! Read on to find beginner info, followed by bugs, followed by future enhancements. :)
+            <h2 style="text-align:left;">Beginner Info</h2>
+            <ul style="text-align:left;">
+                <li>Enter a username and password above and hit enter to log in. <b>Note</b>: This is not over HTTPS yet, so don't use any passwords you care about! Passwords are not stored in plaintext.</li>
+                <li>If the account does not exist, it will be created with the username and password.</li>
+                <li>Once you are logged in, you will be able to post a message update at the bottom of the screen.  Just type a message and then hit enter!</li>
+                <li>New messages are posted at the bottom of the page.</li>
+		<li>There are convenient "Top" and "Bot" buttons located in the top right and bottom right of the screen. These will allow you to quickly jump to the top and bottom of the messages.</li>
+                <li>When a new message is posted, you will automatically scroll to the bottom of the screen.</li>
+                <li>Type "/header Title Message" (no quotes) in order to create a new title heading.</li>
+                <li>Type "/act Action message." (no quotes) in order to submit a user action. These will appear in bold.</li>
+            </ul>
+            <h2 style="text-align:left;">Bugs</h2>
+            <ul>
+                <li>Stupid long words in mobile will cause width-wise scrolling.</li>
+            </ul>
+            <h2 style="text-align:left;">TODO</h2>
+            <ul>
+                <li>Add HTTPS for secure communications!</li>
+                <li>Make everything prettier!</li>
+                <li>Allow users to delete their messages.</li>
+                <li>See if we can add a multi-user canvas.</li>
+            </ul>
+        </div>
+    </center>
+</body>

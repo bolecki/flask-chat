@@ -1,0 +1,77 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700);
+
+body {
+  margin: 0px;
+  padding: 0px;
+  font: 16px/1.6 menlo, monospace;
+}
+
+button:focus {
+  outline:0;
+}
+
+.button {
+  width:15%;
+  height:2.4em;
+  margin:0px;
+  padding:0px;
+  border: 0 none;
+  color: #FFFFFF;
+  cursor: pointer;
+  display: inline-block;
+  text-transform: none;
+  transition: all 0.3s ease 0s;
+  -moz-transition: all 0.3s ease 0s;
+  -webkit-transition: all 0.3s ease 0s;
+  /* auto */
+  text-align: center;
+  /* DELETE WHEN WIDTH AUTO */
+}
+.button.red {
+  background: none repeat scroll 0 0 #E0645C;
+  color: #FFFFFF;
+}
+.button.red:hover {
+  background: none repeat scroll 0 0 #999999;
+  color: #FFFFFF;
+}
+.button.dark {
+  background: none repeat scroll 0 0 #444444;
+  color: #FFFFFF;
+}
+.button.dark:hover {
+  background: none repeat scroll 0 0 #2DB6CF;
+  color: #FFFFFF;
+}
+.button.light {
+  background: none repeat scroll 0 0 #999999;
+  color: #FFFFFF;
+}
+.button.light:hover {
+  background: none repeat scroll 0 0 #444444;
+  color: #FFFFFF;
+}
+.button.green {
+  background: none repeat scroll 0 0 #46b98a;
+  color: #FFFFFF;
+}
+.button.green:hover {
+  background: none repeat scroll 0 0 #444444;
+  color: #FFFFFF;
+}
+.button.blue {
+  background: none repeat scroll 0 0 #2DB6CF;
+  color: #FFFFFF;
+}
+.button.blue:hover {
+  background: none repeat scroll 0 0 #444444;
+  color: #FFFFFF;
+}
+
+b {
+  color: #E0645C;
+}
+
+#submit{
+  visibility: hidden;
+}

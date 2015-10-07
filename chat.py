@@ -47,18 +47,27 @@ def handle_message(message, user):
         the associated user.
     '''
     text = str(message['data'])
+
+    # Check to see if the user is leaving
     if text[0:5] == "/quit":
         if text[6:] == user:
             return "quit"
     else:
         msg_user_m = re.search('^<b>(.*)</b>: ', text)
         mine = False
+
+        # Check to see if it is a header message
         if '</br><center' in text:
             if 'class="{user}"'.format(user=user) in text:
                 mine = True
+
+        # Check to see who the user user
         if msg_user_m:
             msg_user = msg_user_m.group(1)
             mine = True if msg_user == user else False
+
+        # Add the message to the DB if the user matches
+        # and return the message back to the event_stream()
         if message['type'] != 'subscribe':
             if mine:
                 red.rpush(chat_id + ":chat", message['data'])
@@ -83,7 +92,12 @@ def event_stream(user):
         Any other connection with this username will be
         disconnected.
     '''
+
+    # Disconnect all other sessions with this username
     red.publish('chat', u'/quit %s' % (user))
+
+    # Subscribe to the chat, listen, and yield messages
+    # to clients
     pubsub = red.pubsub()
     pubsub.subscribe('chat')
     for message in pubsub.listen():
@@ -111,17 +125,25 @@ def login():
         proceed to the chat page.
     '''
     if flask.request.method == 'POST':
+        # HTML encode to avoid XSS attacks
         user = flask.request.form['user'].replace("<", "&lt;").replace(">", "&gt;")
+
+        # Check to see if the user exists
         if red.exists(user.lower()):
+
+            # If they exist, authenticate and redirect
             if sha256_crypt.verify(flask.request.form['pwd'], red.hget(user.lower(), 'pwd')):
                 flask.session['user'] = user
                 return flask.redirect('/')
             else:
+                # Reload and provide error on auth failure
                 return flask.render_template('login.html', username=user, error=True)
         else:
+            # If user does not exist, create account and redurect
             red.hmset(user.lower(), {'name':user,'pwd':sha256_crypt.encrypt(flask.request.form['pwd'])})
             flask.session['user'] = user
             return flask.redirect('/')
+
     return flask.render_template('login.html', username="", error=False)
 
 
@@ -139,14 +161,24 @@ def post():
         pickup the information from redis and provide
         new content.
     '''
+
+    # HTML encode to avoid XSS attacks
     message = flask.request.form['message'].replace("<", "&lt;").replace(">", "&gt;")
+
     user = flask.session.get('user', 'anonymous')
+
+    # Format header message
     if message[0:7] == "/header":
         red.publish('chat', u'</br><center class="%s" style="font-size:1.5em;font-weight:bold;">%s</center>' % (user, message[8:]))
+
+    # Format action message
     elif message[0:4] == "/act":
         red.publish('chat', u'<b>%s</b>: <strong>%s</strong>' % (user, message[5:]))
+
+    # Format default message
     else:
         red.publish('chat', u'<b>%s</b>: %s' % (user, message))
+
     return flask.Response(status=204)
 
 
@@ -192,14 +224,25 @@ def images():
     '''
     if flask.request.method == 'POST':
         file = flask.request.files['file']
+
+        # Check to make sure the file is allowed
         if file and allowed_file(file.filename):
+
+            # Create secure filename
             filename = str(time.time()).split(".")[0] + "-" + secure_filename(file.filename)
             rel_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+            # Save the file
             file.save(rel_path)
+
+            # Remove the file if corrupt
             if os.stat(rel_path).st_size < 1:
                 os.remove(rel_path)
+
+    # Get all images
     files = sorted(os.listdir(app.config['UPLOAD_FOLDER']))[::-1]
     files.remove('.gitignore')
+
     return flask.render_template('images.html', files=files)
 
 

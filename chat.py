@@ -48,30 +48,45 @@ def handle_message(message, user):
     '''
     text = str(message['data'])
 
+    # HTML encode to avoid XSS attacks
+    text = text.replace("<", "&lt;").replace(">", "&gt;")
+
     # Check to see if the user is leaving
     if text[0:5] == "/quit":
         if text[6:] == user:
             return "quit"
+
+    # Format header message
+    if text[0:7] == "/header":
+        text = '</br><center class="{user}" style="font-size:1.5em;font-weight:bold;">{message}</center>'.format(user=user, message=text[8:])
+
+    # Format action message
+    elif text[0:4] == "/act":
+        text = '<b>{user}</b>: <strong>{message}</strong>'.format(user=user, message=text[5:])
+
+    # Format default message
     else:
-        msg_user_m = re.search('^<b>(.*)</b>: ', text)
-        mine = False
+        text = '<b>{user}</b>: {message}'.format(user=user, message=text)
 
-        # Check to see if it is a header message
-        if '</br><center' in text:
-            if 'class="{user}"'.format(user=user) in text:
-                mine = True
+    msg_user_m = re.search('^<b>(.*)</b>: ', text)
+    mine = False
 
-        # Check to see who the user user
-        if msg_user_m:
-            msg_user = msg_user_m.group(1)
-            mine = True if msg_user == user else False
+    # Check to see if it is a header message
+    if '</br><center' in text:
+        if 'class="{user}"'.format(user=user) in text:
+            mine = True
 
-        # Add the message to the DB if the user matches
-        # and return the message back to the event_stream()
-        if message['type'] != 'subscribe':
-            if mine:
-                red.rpush(chat_id + ":chat", message['data'])
-            return 'data: %s\n\n' % message['data']
+    # Check to see who the user user
+    if msg_user_m:
+        msg_user = msg_user_m.group(1)
+        mine = True if msg_user == user else False
+
+    # Add the message to the DB if the user matches
+    # and return the message back to the event_stream()
+    if message['type'] != 'subscribe':
+        if mine:
+            red.rpush(chat_id + ":chat", text)
+        return 'data: {text}\n\n'.format(text=text)
 
 
 def event_stream(user):
@@ -150,34 +165,14 @@ def login():
 @app.route('/post', methods=['POST'])
 def post():
     '''
-        Process new user messages and publish to
-        the event_stream().
-
-        HTML encode messages to avoid XSS attacks, then
-        format the actual HTML based on the message:
-        header, action, or regular message.
+        Publish new messages to the event_stream().
 
         Return status 204 as the event_stream() will
         pickup the information from redis and provide
         new content.
     '''
-
-    # HTML encode to avoid XSS attacks
-    message = flask.request.form['message'].replace("<", "&lt;").replace(">", "&gt;")
-
-    user = flask.session.get('user', 'anonymous')
-
-    # Format header message
-    if message[0:7] == "/header":
-        red.publish('chat', u'</br><center class="%s" style="font-size:1.5em;font-weight:bold;">%s</center>' % (user, message[8:]))
-
-    # Format action message
-    elif message[0:4] == "/act":
-        red.publish('chat', u'<b>%s</b>: <strong>%s</strong>' % (user, message[5:]))
-
-    # Format default message
-    else:
-        red.publish('chat', u'<b>%s</b>: %s' % (user, message))
+    # Publish the message to chat
+    red.publish('chat', flask.request.form['message'])
 
     return flask.Response(status=204)
 

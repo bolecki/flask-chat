@@ -29,13 +29,13 @@ def handle_message(message, user):
         connections.
 
         Cases:
-        '/quit' - return a value to quit the stream
-        '</br><center' - this is a header message
-            check to see if it is associated with the
-            current user
-        '^<b>.*</b>: ' - this is a regular message
-            check to see if it is associated with the
-            current user
+            '/quit' - return a value to quit the stream
+            '</br><center' - this is a header message
+                check to see if it is associated with the
+                current user
+            '^<b>.*</b>: ' - this is a regular message
+                check to see if it is associated with the
+                current user
 
         If the message is associated with the current
         user, append it to the redis DB chat list.

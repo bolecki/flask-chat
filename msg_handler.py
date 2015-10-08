@@ -68,9 +68,11 @@ def handle_message(message, stream_user):
         it is only added once.  This is done by checking
         the associated user.
     '''
+    # Ignore the message if it is a subscription
     if message['type'] == 'subscribe':
         return
 
+    # Convert text to a string
     text = str(message['data'])
 
     # HTML encode to avoid XSS attacks

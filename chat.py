@@ -1,12 +1,12 @@
 import flask
 import redis
 import os
-import re
 import time
 
 from shutil import copyfile
 from passlib.hash import sha256_crypt
 from werkzeug import secure_filename
+from msg_handler import handle_message
 
 app = flask.Flask(__name__)
 app.secret_key = 'V\xb8\x1fPR$\x82~\xe1\xbd\t\x0fq\t\xe9\xd8\x13\xea}\x91H\xa2\xd0o'
@@ -19,75 +19,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Placeholder id
 chat_id = "02e8ifno32"
-
-def handle_message(message, user):
-    '''
-        Parse the message and determine how to proceed.
-
-        This will either return a value to close the
-        stream, or return a message to broadcast to all
-        connections.
-
-        Cases:
-            '/quit' - return a value to quit the stream
-            '</br><center' - this is a header message
-                check to see if it is associated with the
-                current user
-            '^<b>.*</b>: ' - this is a regular message
-                check to see if it is associated with the
-                current user
-
-        If the message is associated with the current
-        user, append it to the redis DB chat list.
-
-        Each stream will process these messages.
-        In order to verify that we do not create
-        duplicates in the database, we must ensure that
-        it is only added once.  This is done by checking
-        the associated user.
-    '''
-    text = str(message['data'])
-
-    # HTML encode to avoid XSS attacks
-    text = text.replace("<", "&lt;").replace(">", "&gt;")
-
-    # Check to see if the user is leaving
-    if text[0:5] == "/quit":
-        if text[6:] == user:
-            return "quit"
-
-    # Format header message
-    if text[0:7] == "/header":
-        text = '</br><center class="{user}" style="font-size:1.5em;font-weight:bold;">{message}</center>'.format(user=user, message=text[8:])
-
-    # Format action message
-    elif text[0:4] == "/act":
-        text = '<b>{user}</b>: <strong>{message}</strong>'.format(user=user, message=text[5:])
-
-    # Format default message
-    else:
-        text = '<b>{user}</b>: {message}'.format(user=user, message=text)
-
-    msg_user_m = re.search('^<b>(.*)</b>: ', text)
-    mine = False
-
-    # Check to see if it is a header message
-    if '</br><center' in text:
-        if 'class="{user}"'.format(user=user) in text:
-            mine = True
-
-    # Check to see who the user user
-    if msg_user_m:
-        msg_user = msg_user_m.group(1)
-        mine = True if msg_user == user else False
-
-    # Add the message to the DB if the user matches
-    # and return the message back to the event_stream()
-    if message['type'] != 'subscribe':
-        if mine:
-            red.rpush(chat_id + ":chat", text)
-        return 'data: {text}\n\n'.format(text=text)
-
 
 def event_stream(user):
     '''
@@ -118,10 +49,13 @@ def event_stream(user):
     for message in pubsub.listen():
         parsed = handle_message(message, user)
         if parsed:
-            if parsed == "quit":
+            message, mine = parsed
+            if message == "quit":
                 break
             else:
-                yield parsed
+                if mine:
+                    red.rpush(chat_id + ":chat", message)
+                yield 'data: {text}\n\n'.format(text=message)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -171,8 +105,10 @@ def post():
         pickup the information from redis and provide
         new content.
     '''
+    user = flask.session.get('user', 'anonymous')
+
     # Publish the message to chat
-    red.publish('chat', flask.request.form['message'])
+    red.publish('chat', user + "}|{" + flask.request.form['message'])
 
     return flask.Response(status=204)
 

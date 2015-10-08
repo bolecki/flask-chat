@@ -30,7 +30,7 @@ RUN cd /tmp/virtualenvs && /tmp/.localpython/bin/virtualenv py2.7 --python=/tmp/
 # Flask
 RUN . /tmp/virtualenvs/py2.7/bin/activate && pip install flask gunicorn gevent redis passlib
 
-WORKDIR /tmp/workdir
+WORKDIR /tmp/workdir/chat
 
 EXPOSE 8012
 

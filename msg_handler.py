@@ -50,14 +50,14 @@ def handle_message(message, stream_user):
         stream, or return a message to broadcast to all
         connections.
 
-        Cases:
-            '/quit' - return a value to quit the stream
-            '</br><center' - this is a header message
-                check to see if it is associated with the
-                current user
-            '^<b>.*</b>: ' - this is a regular message
-                check to see if it is associated with the
-                current user
+        Parameters:
+            message     - the message that is being processed
+            stream_user - the user that this stream corresponds to
+
+        Output:
+            text - message after formatting is complete
+            mine - indicates that the user sending the
+                   message corresponds to this data stream
 
         If the message is associated with the current
         user, append it to the redis DB chat list.
@@ -66,7 +66,7 @@ def handle_message(message, stream_user):
         In order to verify that we do not create
         duplicates in the database, we must ensure that
         it is only added once.  This is done by checking
-        the associated user.
+        the associated user in the 'mine' variable.
     '''
     # Ignore the message if it is a subscription
     if message['type'] == 'subscribe':
@@ -94,6 +94,5 @@ def handle_message(message, stream_user):
     # Determine if the message belongs to the stream user
     mine = True if msg_user == stream_user else False
 
-    # Add the message to the DB if the user matches
-    # and return the message back to the event_stream()
+    # Return message and whether it matches the stream user
     return text, mine

@@ -14,7 +14,7 @@ app.secret_key = secret_key.key
 red = redis.StrictRedis(host="db")
 
 # Image upload info
-UPLOAD_FOLDER = '/tmp/workdir/static/images/'
+UPLOAD_FOLDER = '/tmp/workdir/chat/static/images/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 

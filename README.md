@@ -4,9 +4,15 @@
 This is a self hosted chat application utilizing the Python Flask web framework, Redis database, and server sent events.  Dockerfiles are provided for the flask application and linked redis database.  This makes it very easy to spin up new instances and give it a try!
 
 ## Setup
-Just clone the repository, build docker images from the provided dockerfiles, and start em up!
+Just clone the repository, create a secret_key.py file, build docker images from the provided dockerfiles, and start em up!
 
 ```bash
+# Generate a secret key
+python -c 'import os; print os.urandom(24).encode("hex")'
+
+# Use the output to create the secret key file
+echo "key = '7268076c403361ebf9b835d34f0ecd72d139eeb884db2702'" > chat/secret_key.py
+
 # Build image for flask app
 cd docker/chat
 docker build -t chat/flask .

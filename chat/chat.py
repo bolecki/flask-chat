@@ -2,6 +2,7 @@ import flask
 import redis
 import os
 import time
+import secret_key
 
 from shutil import copyfile
 from passlib.hash import sha256_crypt
@@ -9,7 +10,7 @@ from werkzeug import secure_filename
 from msg_handler import handle_message
 
 app = flask.Flask(__name__)
-app.secret_key = 'V\xb8\x1fPR$\x82~\xe1\xbd\t\x0fq\t\xe9\xd8\x13\xea}\x91H\xa2\xd0o'
+app.secret_key = secret_key.key
 red = redis.StrictRedis(host="db")
 
 # Image upload info

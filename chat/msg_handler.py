@@ -15,12 +15,18 @@ def generate_html(text, user):
 
         Output:
             text - the formatted message
-            type - the message type (header, action, default)
+            type - the message type (header, action, link, default)
 
         Cases:
             header  - large centered text with no username
             action  - bolded text similar to default
+            link    - hyperlink to a site
             default - plain message
+
+        Link is delicate and will create a lot of broken links
+        if they are not full paths.  Links must start with http or
+        https.  It should be fine if the link is copied directly
+        from a browser such as chrome.
     '''
     type = ''
 
@@ -33,6 +39,11 @@ def generate_html(text, user):
     elif text[0:4] == "/act":
         type = "action"
         text = '<b>{user}</b>: <strong>{message}</strong>'.format(user=user, message=text[5:])
+
+    # Format link message
+    elif text[0:5] == "/link":
+        type = "link"
+        text = '<b>{user}</b>: <a target="_blank" href="{message}">{message}</a>'.format(user=user, message=text[6:])
 
     # Format default message
     else:

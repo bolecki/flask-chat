@@ -20,6 +20,10 @@ class MessageHandlerTests(unittest.TestCase):
         self.assertEqual(msg_handler.generate_html('/header hi', 'test'), 
             ('</br><center class="test" style="font-size:1.5em;font-weight:bold;">hi</center>', 'header'))
 
+    def test_generate_html_link(self):
+        self.assertEqual(msg_handler.generate_html('/link hi', 'test'), 
+            ('<b>test</b>: <a target="_blank" href="hi">hi</a>', 'link'))
+
     # Testing handle_message(message, stream_user)
     def test_handle_message_quit(self):
         message = {'type': 'message', 'data': '/quit test'}

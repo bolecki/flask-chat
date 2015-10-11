@@ -71,7 +71,15 @@
         }
         $('#in').keyup(function(e){
             if (e.keyCode == 13) {
-                $.post('/post', {'message': $(this).val()});
+                var msg = $(this).val();
+                if(msg.substring(0,5) == "/link"){
+                    if(msg.substring(0,10) != "/link http"){
+                        out.innerHTML = out.innerHTML + '</br>' + "<b>Please include http:// or https:// in all links.</b>";
+                        $(this).val('');
+                        return;
+                    }
+                }
+                $.post('/post', {'message': msg});
                 $(this).val('');
             }
         });

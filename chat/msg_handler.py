@@ -1,3 +1,8 @@
+'''
+   This module contains helper functions for processing
+   messages.
+'''
+
 import re
 
 def html_encode(text):
@@ -9,24 +14,25 @@ def generate_html(text, user):
     '''
         Format HTML based on the message type.
 
-        Parameters:
-            text - the message to be formatted
-            user - the user that entered the message
-
-        Output:
-            text - the formatted message
-            type - the message type (header, action, link, default)
+        :param text: The message to be formatted.
+        :type text: string
+        :param user: the user that entered the message
+        :type user: string
+        :returns:  tuple containing text (the formatted message) and type (header, action, link, default)
 
         Cases:
-            header  - large centered text with no username
-            action  - bolded text similar to default
-            link    - hyperlink to a site
-            default - plain message
 
-        Link is delicate and will create a lot of broken links
-        if they are not full paths.  Links must start with http or
-        https.  It should be fine if the link is copied directly
-        from a browser such as chrome.
+        - header  - large centered text with no username
+        - action  - bolded text similar to default
+        - link    - hyperlink to a site
+        - default - plain message
+
+        .. note::
+
+            Link is delicate and will create a lot of broken links
+            if they are not full paths.  Links must start with http or
+            https.  It should be fine if the link is copied directly
+            from a browser such as chrome.
     '''
     type = ''
 
@@ -61,14 +67,12 @@ def handle_message(message, stream_user):
         stream, or return a message to broadcast to all
         connections.
 
-        Parameters:
-            message     - the message that is being processed
-            stream_user - the user that this stream corresponds to
+        :param message: the message that is being processed
+        :type message: dict
+        :param stream_user: the user that this stream corresponds to
+        :type stream_user: string
 
-        Output:
-            text - message after formatting is complete
-            mine - indicates that the user sending the
-                   message corresponds to this data stream
+        :returns: tuple containing text (the formatted message) and mine (bool, indicates that the user sending the message corresponds to this data stream)
 
         If the message is associated with the current
         user, append it to the redis DB chat list.

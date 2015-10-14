@@ -1,3 +1,9 @@
+'''
+    A simple chat application utilizing Python,
+    the Flask web framework, Server Sent Events,
+    Redis, and Docker.
+'''
+
 import flask
 import redis
 import os

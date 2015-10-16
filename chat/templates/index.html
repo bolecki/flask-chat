@@ -5,7 +5,7 @@
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 </head>
-<body style="padding-bottom:2em;" onload="scrBot();">
+<body onload="scrBot();">
     <div style="position:fixed;width:100%;">
         <button class="button red center" onclick="scrTop()" style="float:right;">Top</button>
         <button class="button red center" onclick="window.open('/images', '_blank')" style="float:right;margin-right:.2em;">Img</button>
@@ -16,7 +16,7 @@
         {% endfor %}
         {{ messages[-1]|safe }}
     </div>
-    <div style="position:fixed;bottom:0px;background-color:white;width:100%;">
+    <div id="bottom-bar">
             <button class="button red center" onclick="scrBot()" style="float:right;">Bot</button>
             <span style="display:block;overflow:hidden;padding-right:1em;"><input id="in" placeholder="Message..." style="width:100%;height:2em;" /></span>
     </div>

@@ -10,6 +10,8 @@ RUN wget http://download.redis.io/releases/redis-2.8.19.tar.gz
 RUN tar xzvf redis-2.8.19.tar.gz
 RUN make -C redis-2.8.19
 
+WORKDIR /tmp/workdir
+
 EXPOSE 6379
 
-ENTRYPOINT ["/redis-2.8.19/src/redis-server"]
+ENTRYPOINT ["/redis-2.8.19/src/redis-server", "/tmp/workdir/redis.conf"]

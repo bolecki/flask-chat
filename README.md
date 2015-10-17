@@ -26,7 +26,7 @@ docker build -t chat/flask docker/chat/
 docker build -t chat/redis docker/redis/
 
 # Start redis db first
-docker run --name chatdb -d chat/redis
+docker run --name chatdb -d -v <full path to repo/database>:/tmp/workdir chat/redis
 
 # Start flask app (make sure to substitute full path below)
 docker run -d --link chatdb:db -v <full path to repo>:/tmp/workdir -p 8012:8012 chat/flask

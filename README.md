@@ -42,7 +42,7 @@ nohup /<path-to-redis>/src/redis-server /<path-to-config>/redis.conf &
 
 # Start the app
 cd <path-to-repo>/chat
-/tmp/virtualenvs/py2.7/bin/gunicorn -b 0.0.0.0:8012 --worker-class=gevent -t 99999 chat:app
+<path-to-gunicorn>/gunicorn -b 0.0.0.0:8012 --worker-class=gevent -t 99999 chat:app
 ```
 
 ## Docker

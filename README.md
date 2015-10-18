@@ -1,4 +1,4 @@
-# Flask/Redis Chat
+# Flask/Redis Chat [![Build Status](https://travis-ci.org/bolecki/flask-chat.svg?branch=master)](https://travis-ci.org/bolecki/flask-chat)
 
 ## Info
 This is a self hosted chat application utilizing the Python Flask web framework, Redis database, and server sent events.  Dockerfiles are provided for the flask application and linked redis database.  This makes it very easy to spin up new instances and give it a try!

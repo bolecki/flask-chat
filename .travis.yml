@@ -3,6 +3,7 @@ sudo: required
 language: python
 
 env:
+  DOCKER_VERSION: 1.10.1-0~trusty
   DOCKER_COMPOSE_VERSION: 1.6.2
 
 python:
@@ -14,6 +15,7 @@ services:
 
 before_install:
   - echo "key = '7268076c403361ebf9b835d34f0ecd72d139eeb884db2702'" > $TRAVIS_BUILD_DIR/chat/secret_key.py
+  - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine=${DOCKER_VERSION}
   - sudo rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose

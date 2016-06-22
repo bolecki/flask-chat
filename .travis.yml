@@ -11,15 +11,12 @@ services:
 
 before_install:
   - echo "key = '7268076c403361ebf9b835d34f0ecd72d139eeb884db2702'" > $TRAVIS_BUILD_DIR/chat/secret_key.py
-  - travis_wait 30 docker build -t chat/flask $TRAVIS_BUILD_DIR/docker/chat/
-  - docker images
-  - docker build -t chat/redis $TRAVIS_BUILD_DIR/docker/redis/
+  - travis_wait 30 docker-compose build
   - docker images
 
 install: "pip install -r requirements.txt"
 
 script:
   - nosetests
-  - docker run --name chatdb -d -v $TRAVIS_BUILD_DIR/database:/tmp/workdir chat/redis
-  - docker run -d --link chatdb:db -v $TRAVIS_BUILD_DIR:/tmp/workdir -p 8012:8012 chat/flask
+  - docker-compose up
   - docker ps -a

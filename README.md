@@ -45,6 +45,14 @@ cd <path-to-repo>/chat
 <path-to-gunicorn>/gunicorn -b 0.0.0.0:8012 --worker-class=gevent -t 99999 chat:app
 ```
 
+## Docker Compose
+Feel free to modify the docker-compose.yml to specify a different port.
+
+```bash
+# Single command deployment
+docker-compose up
+```
+
 ## Docker
 
 ```bash

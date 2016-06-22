@@ -1,0 +1,14 @@
+version: '2'
+services:
+  chat:
+    build: docker/chat
+    ports:
+      - "8012:8012"
+    volumes:
+      - .:/tmp/workdir
+    links:
+      - redis:db
+  redis:
+    build: docker/redis
+    volumes:
+      - ./database:/tmp/workdir
